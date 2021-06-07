@@ -17,19 +17,16 @@
 		<java.version>8</java.version>
 	</properties>
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-dynamodb -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-dynamodb</artifactId>
+			<version>1.11.1034</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.kafka</groupId>
-			<artifactId>spring-kafka</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -52,13 +49,6 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>1.10.19</version>
-			<scope>test</scope>
-		</dependency>
-
-
-		<dependency>
-			<groupId>org.springframework.kafka</groupId>
-			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -105,6 +95,23 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<executions>
+					<execution>
+					<id>default</id>
+					<goals>
+						<goal>build</goal>
+					</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<respository>tweetapp/${project.version}</respository>
+					<tag>${project.version}</tag>
+					<skipDockerInfo>true</skipDockerInfo>
 				</configuration>
 			</plugin>
 		</plugins>

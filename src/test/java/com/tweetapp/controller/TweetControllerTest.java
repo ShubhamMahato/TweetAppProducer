@@ -1,7 +1,6 @@
 package com.tweetapp.controller;
 
 import com.tweetapp.model.Tweet;
-import com.tweetapp.model.TweetEventType;
 import com.tweetapp.model.response.UserLoginResponse;
 import com.tweetapp.service.TweetService;
 import org.junit.Assert;
@@ -26,7 +25,7 @@ public class TweetControllerTest {
 
     @Test
     public void postTweet(){
-        Tweet tweet=Tweet.builder().id("dsdsdsds").message("sdafdsfsdfs").tweetEventType(TweetEventType.NEW).postDate(new Date()).build();
+        Tweet tweet=Tweet.builder().id("dsdsdsds").message("sdafdsfsdfs").postDate(new Date()).build();
         String username="dadadada";
         UserLoginResponse userLoginResponse= UserLoginResponse.builder().username("adss").email("dadadasdas").lastName("dsdsd").firstName("dadad").build();
 
@@ -48,7 +47,7 @@ public class TweetControllerTest {
 
     @Test
     public void postTweet_Error(){
-        Tweet tweet=Tweet.builder().id("dsdsdsds").message("sdafdsfsdfs").tweetEventType(TweetEventType.NEW).postDate(new Date()).build();
+        Tweet tweet=Tweet.builder().id("dsdsdsds").message("sdafdsfsdfs").postDate(new Date()).build();
         String username="dadadada";
         UserLoginResponse userLoginResponse= UserLoginResponse.builder().username("adss").email("dadadasdas").lastName("dsdsd").firstName("dadad").error("sdsdsdsd").build();
 
@@ -59,7 +58,7 @@ public class TweetControllerTest {
 
     @Test
     public void updateTweet(){
-        Tweet tweet=Tweet.builder().id("dsdsdsds").message("sdafdsfsdfs").tweetEventType(TweetEventType.NEW).postDate(new Date()).build();
+        Tweet tweet=Tweet.builder().id("dsdsdsds").message("sdafdsfsdfs").postDate(new Date()).build();
         String username="dadadada";
         UserLoginResponse userLoginResponse= UserLoginResponse.builder().username("adss").email("dadadasdas").lastName("dsdsd").firstName("dadad").error("sdsdsdsd").build();
 
@@ -69,7 +68,7 @@ public class TweetControllerTest {
     }
     @Test
     public void updateTweet_blankUsername(){
-        Tweet tweet=Tweet.builder().id("dsdsdsds").message("sdafdsfsdfs").tweetEventType(TweetEventType.NEW).postDate(new Date()).build();
+        Tweet tweet=Tweet.builder().id("dsdsdsds").message("sdafdsfsdfs").postDate(new Date()).build();
         String username="dadadada";
         UserLoginResponse userLoginResponse= UserLoginResponse.builder().username("adss").email("dadadasdas").lastName("dsdsd").firstName("dadad").error("sdsdsdsd").build();
 
@@ -80,7 +79,7 @@ public class TweetControllerTest {
 
     @Test
     public void updateTweet_NullMessage(){
-        Tweet tweet=Tweet.builder().id("dsdsdsds").tweetEventType(TweetEventType.NEW).postDate(new Date()).build();
+        Tweet tweet=Tweet.builder().id("dsdsdsds").postDate(new Date()).build();
         String username="dadadada";
         UserLoginResponse userLoginResponse= UserLoginResponse.builder().username("adss").email("dadadasdas").lastName("dsdsd").firstName("dadad").error("sdsdsdsd").build();
 
@@ -91,7 +90,7 @@ public class TweetControllerTest {
 
     @Test
     public void deleteTweet(){
-        Tweet tweet=Tweet.builder().id("dsdsdsds").tweetEventType(TweetEventType.NEW).postDate(new Date()).build();
+        Tweet tweet=Tweet.builder().id("dsdsdsds").postDate(new Date()).build();
         String username="dadadada";
         UserLoginResponse userLoginResponse= UserLoginResponse.builder().username("adss").email("dadadasdas").lastName("dsdsd").firstName("dadad").error("sdsdsdsd").build();
 
@@ -103,7 +102,7 @@ public class TweetControllerTest {
 
     @Test
     public void replyTweet(){
-        Tweet tweet=Tweet.builder().id("dsdsdsds").tweetEventType(TweetEventType.NEW).postDate(new Date()).build();
+        Tweet tweet=Tweet.builder().id("dsdsdsds").postDate(new Date()).build();
         String username="dadadada";
         UserLoginResponse userLoginResponse= UserLoginResponse.builder().username("adss").email("dadadasdas").lastName("dsdsd").firstName("dadad").error("sdsdsdsd").build();
 
@@ -124,7 +123,7 @@ public class TweetControllerTest {
 
     @Test
     public void getAllTweets(){
-        Tweet tweet=Tweet.builder().id("dsdsdsds").tweetEventType(TweetEventType.NEW).postDate(new Date()).build();
+        Tweet tweet=Tweet.builder().id("dsdsdsds").postDate(new Date()).build();
         Mockito.when(tweetService.getAllTweets(Mockito.anyString())).thenReturn(Collections.singletonList(tweet));
         ResponseEntity res=tweetController.getAllTweets("dwdwwd");
         Assert.assertNotNull(res.getBody());
@@ -132,7 +131,7 @@ public class TweetControllerTest {
 
     @Test
     public void getAllUsersTweets(){
-        Tweet tweet=Tweet.builder().id("dsdsdsds").tweetEventType(TweetEventType.NEW).postDate(new Date()).build();
+        Tweet tweet=Tweet.builder().id("dsdsdsds").postDate(new Date()).build();
         Mockito.when(tweetService.getAllUsersTweets(Mockito.anyString())).thenReturn(Collections.singletonList(tweet));
         ResponseEntity res=tweetController.getAllUsersTweets("dwdwwd");
         Assert.assertNotNull(res.getBody());

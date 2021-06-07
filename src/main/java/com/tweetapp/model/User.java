@@ -1,23 +1,30 @@
 package com.tweetapp.model;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.annotation.Id;
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "TWEET_USER")
+@DynamoDBTable(tableName = "TWEET_USER")
 public class User {
-    private String firstName;
-    private String lastName;
-    @Id
+    @DynamoDBHashKey
     private String email;
+    @DynamoDBAttribute
+    private String firstName;
+    @DynamoDBAttribute
+    private String lastName;
+    @DynamoDBAttribute
     private String loginId;
+    @DynamoDBAttribute
     private String password;
+    @DynamoDBAttribute
     private String confirmPassword;
+    @DynamoDBAttribute
     private String phoneNumber;
 }

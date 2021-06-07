@@ -1,6 +1,7 @@
 package com.tweetapp.service.impl;
 
-import com.tweetapp.dao.UserDao;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.tweetapp.model.ReasonConstant;
 import com.tweetapp.model.User;
 import com.tweetapp.model.response.UserLoginResponse;
@@ -11,14 +12,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private UserDao userDao;
+    private DynamoDBMapper dynamoDBMapper;
 
     @Override
     public String saveUser(User user) {
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
             return ReasonConstant.LOGIN_ID_ALREADY_EXISTS;
         }
         if (userValidation.equalsIgnoreCase(ReasonConstant.VALID)) {
-            userDao.save(user);
+            dynamoDBMapper.save(user);
             return ReasonConstant.USER_REGISTERED;
         } else {
             return userValidation;
@@ -44,28 +44,40 @@ public class UserServiceImpl implements UserService {
         if (email == null) {
             return false;
         }
-        return userDao.findByEmail(email).isPresent();
+        return dynamoDBMapper.load(User.class,email)!=null;
     }
 
     private boolean isValidLoginId(String loginId) {
         if (loginId == null) {
             return false;
         }
-        return userDao.findByLoginId(loginId).isPresent();
+        List<User> users=dynamoDBMapper.scan(User.class,new DynamoDBScanExpression());
+        for(User user:users){
+            if(user.getLoginId()==loginId){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public UserLoginResponse loginUser(String username, String password) {
-        Optional<User> user = userDao.findByEmailAndPassword(username, password);
+        List<User> users=dynamoDBMapper.scan(User.class,new DynamoDBScanExpression());
+        User user=null;
+        for(User userListIte:users){
+            if(userListIte.getEmail().equalsIgnoreCase(username) && userListIte.getPassword().equals(password)){
+                user=userListIte;
+            }
+        }
 
-        if (!user.isPresent()) {
+        if (user==null) {
             return UserLoginResponse.builder().error(ReasonConstant.INVALID_CREDENTIALS_PLEASE_TRY_AGAIN)
                     .build();
         }
-        if (user.get().getEmail() != null || user.get().getFirstName() != null || user.get().getLastName() != null ||
-                user.get().getLoginId() != null) {
-            return UserLoginResponse.builder().username(user.get().getLoginId()).email(user.get().getEmail()).
-                    firstName(user.get().getFirstName()).lastName(user.get().getLastName())
+        if (user.getEmail() != null || user.getFirstName() != null || user.getLastName() != null ||
+                user.getLoginId() != null) {
+            return UserLoginResponse.builder().username(user.getLoginId()).email(user.getEmail()).
+                    firstName(user.getFirstName()).lastName(user.getLastName())
                     .build();
         }
         return UserLoginResponse.builder().error(ReasonConstant.INVALID_CREDENTIALS_PLEASE_TRY_AGAIN)
@@ -74,8 +86,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String forgotPassword(String username, String newPassword, String confirmPassword) {
-        Optional<User> user = userDao.findByLoginId(username);
-        if (!user.isPresent()) {
+        User user=null;
+        List<User> users=dynamoDBMapper.scan(User.class,new DynamoDBScanExpression());
+        for(User userItr: users){
+            if(userItr.getLoginId().equalsIgnoreCase(username)){
+                user=userItr;
+            }
+        }
+        if (user==null) {
             return ReasonConstant.NO_USER_FOUND;
         }
         if (newPassword.length() < 8 || confirmPassword.length() < 8) {
@@ -84,15 +102,15 @@ public class UserServiceImpl implements UserService {
         if (!UserValidator.isValidPassword(newPassword, confirmPassword)) {
             return ReasonConstant.PASSWORD_AND_CONFIRM_NOT_SAME;
         }
-        user.get().setPassword(newPassword);
-        user.get().setConfirmPassword(confirmPassword);
-        userDao.save(user.get());
+        user.setPassword(newPassword);
+        user.setConfirmPassword(confirmPassword);
+        dynamoDBMapper.save(user);
         return ReasonConstant.PASSWORD_CHANGED_PLEASE_LOGIN_AGAIN;
     }
 
     @Override
     public List<String> getAllUsers() {
-        List<User> users = userDao.findAll();
+        List<User> users = dynamoDBMapper.scan(User.class,new DynamoDBScanExpression());
         if (users.isEmpty()) {
             return new ArrayList<>();
         } else {
@@ -103,13 +121,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserLoginResponse findUser(String username) {
-        Optional<User> user = userDao.findByLoginId(username);
-        if (!user.isPresent()) {
+        User user=null;
+        List<User> users=dynamoDBMapper.scan(User.class,new DynamoDBScanExpression());
+        for(User userItr: users){
+            if(userItr.getLoginId().equalsIgnoreCase(username)){
+                user=userItr;
+            }
+        }
+        if (user==null) {
             return UserLoginResponse.builder().error(ReasonConstant.NO_USER_FOUND).build();
-        } else if (user.get().getEmail() != null || user.get().getFirstName() != null || user.get().getLastName() != null ||
-                user.get().getLoginId() != null) {
-            return UserLoginResponse.builder().firstName(user.get().getFirstName()).lastName(user.get().getFirstName()).
-                    email(user.get().getEmail()).username(user.get().getLoginId()).build();
+        } else if (user.getEmail() != null || user.getFirstName() != null || user.getLastName() != null ||
+                user.getLoginId() != null) {
+            return UserLoginResponse.builder().firstName(user.getFirstName()).lastName(user.getFirstName()).
+                    email(user.getEmail()).username(user.getLoginId()).build();
         }
         return UserLoginResponse.builder().error(ReasonConstant.NO_USER_FOUND).build();
     }
