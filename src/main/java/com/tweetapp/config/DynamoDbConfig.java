@@ -11,6 +11,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class DynamoDbConfig {
+    private static final String SERVICE_ENDPOINT="";
+    private static final String SERVICE_REGION="";
+    private static final String SERVICE_KEY="";
+    private static final String SERVICE_SECERET_KEY="";
+
+
 
     @Bean
     public DynamoDBMapper mapper(){

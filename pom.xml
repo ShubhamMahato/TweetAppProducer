@@ -84,6 +84,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>tweet-app</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -96,23 +97,14 @@
 						</exclude>
 					</excludes>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
 				<executions>
 					<execution>
-					<id>default</id>
-					<goals>
-						<goal>build</goal>
-					</goals>
+						<id>repackage</id>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<respository>tweetapp/${project.version}</respository>
-					<tag>${project.version}</tag>
-					<skipDockerInfo>true</skipDockerInfo>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
